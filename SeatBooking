@@ -1,0 +1,164 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_SEATS 50
+
+typedef struct {
+    int seatNumber;
+    char passengerName[50];
+    int isBooked;
+} Seat;
+
+//typedef is used to define a new type name Seat
+
+Seat busSeats[MAX_SEATS];
+
+void initializeSeats() {
+    for (int i = 0; i < MAX_SEATS; i++) {
+        busSeats[i].seatNumber = i + 1;
+        busSeats[i].isBooked = 0; // 0 means seat is not booked
+    }
+}
+
+void loadSeatsFromFile() {
+    FILE *file = fopen("bus_seats.txt", "rb");
+    
+    //The "rb" mode is used when you are working with binary files, and "r" is used for opening text files.
+    
+    if (file != NULL) {
+        fread(busSeats, sizeof(Seat), MAX_SEATS, file);
+        fclose(file);
+    }
+}
+
+void saveSeatsToFile() {
+    FILE *file = fopen("bus_seats.txt", "wb");
+    
+    //The "wb" mode is used for binary files, and "w" is used for opening text files.
+    
+    if (file != NULL) {
+        fwrite(busSeats, sizeof(Seat), MAX_SEATS, file);
+        fclose(file);
+    }
+}
+
+void displayAvailableSeats() {
+    printf("Available seats:\n");
+    for (int i = 0; i < MAX_SEATS; i++) {
+        if (!busSeats[i].isBooked) {
+            printf("Seat %d\n", busSeats[i].seatNumber);
+        }
+    }
+}
+
+void bookSeat() {
+    int seatNumber;
+    printf("Enter the seat number you want to book: ");
+    scanf("%d", &seatNumber);
+
+    if (seatNumber < 1 || seatNumber > MAX_SEATS) {
+        printf("Invalid seat number\n");
+        return;
+    }
+
+    if (busSeats[seatNumber - 1].isBooked) {
+        printf("Seat already booked\n");
+    } else {
+        printf("Enter passenger name: ");
+        scanf("%s", busSeats[seatNumber - 1].passengerName);
+        busSeats[seatNumber - 1].isBooked = 1;
+        printf("Seat booked successfully\n");
+        saveSeatsToFile(); // Save changes to the file
+    }
+}
+
+void deleteBooking() {
+    int seatNumber;
+    printf("Enter the seat number you want to delete the booking for: ");
+    scanf("%d", &seatNumber);
+
+    if (seatNumber < 1 || seatNumber > MAX_SEATS) {
+        printf("Invalid seat number\n");
+        return;
+    }
+
+    if (busSeats[seatNumber - 1].isBooked) {
+        busSeats[seatNumber - 1].isBooked = 0;
+        printf("Booking deleted successfully\n");
+        saveSeatsToFile(); // Save changes to the file
+    } else {
+        printf("Seat is not booked\n");
+    }
+}
+
+void updateBooking() {
+    int seatNumber;
+    printf("Enter the seat number you want to update the booking for: ");
+    scanf("%d", &seatNumber);
+
+    if (seatNumber < 1 || seatNumber > MAX_SEATS) {
+        printf("Invalid seat number\n");
+        return;
+    }
+
+    if (busSeats[seatNumber - 1].isBooked) {
+        printf("Enter new passenger name: ");
+        scanf("%s", busSeats[seatNumber - 1].passengerName);
+        printf("Booking updated successfully\n");
+        saveSeatsToFile(); // Save changes to the file
+    } else {
+        printf("Seat is not booked\n");
+    }
+}
+
+void displayBookedSeats() {
+    printf("Booked seats:\n");
+    for (int i = 0; i < MAX_SEATS; i++) {
+        if (busSeats[i].isBooked) {
+            printf("Seat %d - Passenger: %s\n", busSeats[i].seatNumber, busSeats[i].passengerName);
+        }
+    }
+}
+
+int main() {
+    initializeSeats();
+    loadSeatsFromFile(); // Load seat information from the file
+
+    int choice;
+    do {
+        printf("\nBus Seat Booking System\n");
+        printf("1. Display available seats\n");
+        printf("2. Book a seat\n");
+        printf("3. Delete booking\n");
+        printf("4. Update booking\n");
+        printf("5. Display booked seats\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                displayAvailableSeats();
+                break;
+            case 2:
+                bookSeat();
+                break;
+            case 3:
+                deleteBooking();
+                break;
+            case 4:
+                updateBooking();
+                break;
+            case 5:
+                displayBookedSeats();
+                break;
+            case 6:
+                printf("Exiting program. Thank you!\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    } while (choice != 6);
+
+    return 0;
+}
