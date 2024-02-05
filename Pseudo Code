@@ -1,0 +1,128 @@
+procedure initializeSeats()
+    for each seat in busSeats
+        seat.seatNumber = index + 1
+        seat.isBooked = 0
+    end for
+end procedure
+
+procedure loadSeatsFromFile()
+    open file "bus_seats.dat" for reading
+    if file exists
+        read data from file into busSeats
+        close file
+    end if
+end procedure
+
+procedure saveSeatsToFile()
+    open file "bus_seats.dat" for writing
+    write data from busSeats to file
+    close file
+end procedure
+
+procedure displayAvailableSeats()
+    for each seat in busSeats
+        if seat.isBooked is 0
+            print "Seat " + seat.seatNumber
+        end if
+    end for
+end procedure
+
+procedure bookSeat()
+    input seatNumber
+    if seatNumber is not valid
+        print "Invalid seat number"
+        return
+    end if
+
+    if busSeats[seatNumber - 1].isBooked is 1
+        print "Seat already booked"
+    else
+        input passengerName
+        busSeats[seatNumber - 1].passengerName = passengerName
+        busSeats[seatNumber - 1].isBooked = 1
+        print "Seat booked successfully"
+        saveSeatsToFile()
+    end if
+end procedure
+
+procedure deleteBooking()
+    input seatNumber
+    if seatNumber is not valid
+        print "Invalid seat number"
+        return
+    end if
+
+    if busSeats[seatNumber - 1].isBooked is 1
+        busSeats[seatNumber - 1].isBooked = 0
+        print "Booking deleted successfully"
+        saveSeatsToFile()
+    else
+        print "Seat is not booked"
+    end if
+end procedure
+
+procedure updateBooking()
+    input seatNumber
+    if seatNumber is not valid
+        print "Invalid seat number"
+        return
+    end if
+
+    if busSeats[seatNumber - 1].isBooked is 1
+        print "Current booking details:"
+        print "Seat " + busSeats[seatNumber - 1].seatNumber + " - Passenger: " + busSeats[seatNumber - 1].passengerName
+
+        input choice
+        if choice is 'y' or 'Y'
+            input newPassengerName
+            busSeats[seatNumber - 1].passengerName = newPassengerName
+            print "Booking updated successfully"
+            saveSeatsToFile()
+        else
+            print "Booking not updated"
+        end if
+    else
+        print "Seat is not booked"
+    end if
+end procedure
+
+procedure displayBookedSeats()
+    for each seat in busSeats
+        if seat.isBooked is 1
+            print "Seat " + seat.seatNumber + " - Passenger: " + seat.passengerName
+        end if
+    end for
+end procedure
+
+procedure main()
+    initializeSeats()
+    loadSeatsFromFile()
+
+    repeat
+        print "Bus Seat Booking System"
+        print "1. Display available seats"
+        print "2. Book a seat"
+        print "3. Delete booking"
+        print "4. Update booking"
+        print "5. Display booked seats"
+        print "6. Exit"
+        input choice
+
+        switch choice
+            case 1:
+                displayAvailableSeats()
+            case 2:
+                bookSeat()
+            case 3:
+                deleteBooking()
+            case 4:
+                updateBooking()
+            case 5:
+                displayBookedSeats()
+            case 6:
+                print "Exiting program. Thank you!"
+            default:
+                print "Invalid choice. Please try again."
+        end switch
+    until choice is 6
+end procedure
