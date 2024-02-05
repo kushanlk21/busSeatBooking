@@ -9,8 +9,6 @@ typedef struct {
     int isBooked;
 } Seat;
 
-//typedef is used to define a new type name Seat
-
 Seat busSeats[MAX_SEATS];
 
 void initializeSeats() {
@@ -21,10 +19,7 @@ void initializeSeats() {
 }
 
 void loadSeatsFromFile() {
-    FILE *file = fopen("bus_seats.txt", "rb");
-    
-    //The "rb" mode is used when you are working with binary files, and "r" is used for opening text files.
-    
+    FILE *file = fopen("bus_seats.dat", "rb");
     if (file != NULL) {
         fread(busSeats, sizeof(Seat), MAX_SEATS, file);
         fclose(file);
@@ -32,10 +27,7 @@ void loadSeatsFromFile() {
 }
 
 void saveSeatsToFile() {
-    FILE *file = fopen("bus_seats.txt", "wb");
-    
-    //The "wb" mode is used for binary files, and "w" is used for opening text files.
-    
+    FILE *file = fopen("bus_seats.dat", "wb");
     if (file != NULL) {
         fwrite(busSeats, sizeof(Seat), MAX_SEATS, file);
         fclose(file);
@@ -102,10 +94,21 @@ void updateBooking() {
     }
 
     if (busSeats[seatNumber - 1].isBooked) {
-        printf("Enter new passenger name: ");
-        scanf("%s", busSeats[seatNumber - 1].passengerName);
-        printf("Booking updated successfully\n");
-        saveSeatsToFile(); // Save changes to the file
+        printf("Current booking details:\n");
+        printf("Seat %d - Passenger: %s\n", busSeats[seatNumber - 1].seatNumber, busSeats[seatNumber - 1].passengerName);
+
+        char choice;
+        printf("Do you want to update the booking? (y/n): ");
+        scanf(" %c", &choice);
+
+        if (choice == 'y' || choice == 'Y') {
+            printf("Enter new passenger name: ");
+            scanf("%s", busSeats[seatNumber - 1].passengerName);
+            printf("Booking updated successfully\n");
+            saveSeatsToFile(); // Save changes to the file
+        } else {
+            printf("Booking not updated\n");
+        }
     } else {
         printf("Seat is not booked\n");
     }
