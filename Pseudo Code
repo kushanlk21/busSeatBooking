@@ -51,14 +51,18 @@ procedure deleteBooking()
         print "Invalid seat number"
         return
     end if
-
-    if busSeats[seatNumber - 1].isBooked is 1
-        busSeats[seatNumber - 1].isBooked = 0
-        print "Booking deleted successfully"
-        saveSeatsToFile()
-    else
-        print "Seat is not booked"
-    end if
+    input choice
+        if choice is 'y' or 'Y'
+                if busSeats[seatNumber - 1].isBooked is 1
+                    busSeats[seatNumber - 1].isBooked = 0
+                    print "Booking deleted successfully"
+                    saveSeatsToFile()
+                else
+                    print "Booking not updated"
+                end if
+        else
+            print "Seat is not booked"
+        end if
 end procedure
 
 procedure updateBooking()
