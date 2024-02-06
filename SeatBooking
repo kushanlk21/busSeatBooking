@@ -1,12 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// User defined Variable
+
 #define MAX_SEATS 50
+
+// Structure of Seat
 
 typedef struct {
     int seatNumber;
     char passengerName[50];
     int isBooked;
+    //If isBooked is 0, it means the seat is not booked.
+    //If isBooked is 1, it means the seat is booked.
 } Seat;
 
 Seat busSeats[MAX_SEATS];
@@ -18,30 +24,38 @@ void initializeSeats() {
     }
 }
 
+// Function of data loading
+
 void loadSeatsFromFile() {
-    FILE *file = fopen("bus_seats.dat", "rb");
+    FILE *file = fopen("bus_seats.txt", "rb");
     if (file != NULL) {
         fread(busSeats, sizeof(Seat), MAX_SEATS, file);
         fclose(file);
     }
 }
 
+// Function of data saving
+
 void saveSeatsToFile() {
-    FILE *file = fopen("bus_seats.dat", "wb");
+    FILE *file = fopen("bus_seats.txt", "wb");
     if (file != NULL) {
         fwrite(busSeats, sizeof(Seat), MAX_SEATS, file);
         fclose(file);
     }
 }
 
+// Function of Display available seat
+
 void displayAvailableSeats() {
     printf("Available seats:\n");
     for (int i = 0; i < MAX_SEATS; i++) {
         if (!busSeats[i].isBooked) {
-            printf("Seat %d\n", busSeats[i].seatNumber);
+            printf("Seat %d\t", busSeats[i].seatNumber);
         }
     }
 }
+
+// Function of Booking a seat
 
 void bookSeat() {
     int seatNumber;
@@ -64,8 +78,12 @@ void bookSeat() {
     }
 }
 
+// Function of Delete booking
+
 void deleteBooking() {
     int seatNumber;
+    char confirm;
+
     printf("Enter the seat number you want to delete the booking for: ");
     scanf("%d", &seatNumber);
 
@@ -75,13 +93,22 @@ void deleteBooking() {
     }
 
     if (busSeats[seatNumber - 1].isBooked) {
-        busSeats[seatNumber - 1].isBooked = 0;
-        printf("Booking deleted successfully\n");
-        saveSeatsToFile(); // Save changes to the file
+        printf("Are you sure you want to delete the booking for seat %d? (y/n): ", seatNumber);
+        scanf(" %c", &confirm);
+
+        if (confirm == 'y' || confirm == 'Y') {
+            busSeats[seatNumber - 1].isBooked = 0;
+            printf("Booking deleted successfully\n");
+            saveSeatsToFile(); // Save changes to the file
+        } else {
+            printf("Booking deletion cancelled\n");
+        }
     } else {
         printf("Seat is not booked\n");
     }
 }
+
+// Function of Update Booking
 
 void updateBooking() {
     int seatNumber;
@@ -114,6 +141,8 @@ void updateBooking() {
     }
 }
 
+// Function of Display Booked Seat
+
 void displayBookedSeats() {
     printf("Booked seats:\n");
     for (int i = 0; i < MAX_SEATS; i++) {
@@ -123,10 +152,12 @@ void displayBookedSeats() {
     }
 }
 
+// main method
+
 int main() {
     initializeSeats();
     loadSeatsFromFile(); // Load seat information from the file
-
+    printf("WELCOME TO BUS SYSTEM [JAFFNA - COLOMBO (NB 1122)] ");
     int choice;
     do {
         printf("\nBus Seat Booking System\n");
